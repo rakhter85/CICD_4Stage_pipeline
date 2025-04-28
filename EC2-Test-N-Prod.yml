@@ -35,12 +35,12 @@ Parameters: # a section
         - Prod Env.
         - Test Env.
       ConstraintDescription: must be a Prod Env. or Test 
-  HostedZoneName:
-    Type: String
-    Description: hostedzone name.
-  RecordName: 
-    Type: String
-    Description: website domain name
+  # HostedZoneName:
+  #   Type: String
+  #   Description: hostedzone name.
+  # RecordName: 
+  #   Type: String
+  #   Description: website domain name
 
 Resources: 
   WebServer:
@@ -75,22 +75,24 @@ Resources:
           ToPort: "22"
 
 # DNA record for our instance
-  myDNSRecord:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneName: !Sub '${HostedZoneName}.'
-      Comment: DNS name for my instance.
-      Name: !Ref RecordName #!Join ['', [!Ref 'WebServer', ., !Ref 'AWS::Region', ., !Ref DNS, .]]
-      Type: A
-      TTL: 60
-      ResourceRecords:
-      - !GetAtt WebServer.PublicIp
+  # myDNSRecord:
+  #   Type: AWS::Route53::RecordSet
+  #   Properties:
+  #     HostedZoneName: !Sub '${HostedZoneName}.'
+  #     Comment: DNS name for my instance.
+  #     Name: !Ref RecordName #!Join ['', [!Ref 'WebServer', ., !Ref 'AWS::Region', ., !Ref DNS, .]]
+  #     Type: A
+  #     TTL: 60
+  #     ResourceRecords:
+  #     - !GetAtt WebServer.PublicIp
       
 Outputs:
   InstanceId:
     Description: InstanceId of the newly created EC2 instance
     Value: !GetAtt WebServer.PublicIp # return the ip addr
 
-  WebserverDNSName:
-    Description: DNS A record name of the website
-    Value: !Join [ "", [ "http://", !Ref myDNSRecord ] ] # return the Name of the DNS A record
+  PublicDnsName:
+    Description: Displaying the PublicDnsName of the EC2 instance 
+    Value: !GetAtt WebServer.PublicDnsName # !GetAtt logicalNameOfResource.attributeName
+    Export:
+      Name: !Sub '${AWS::StackName}-PublicDnsName' 
